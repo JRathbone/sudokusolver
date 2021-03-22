@@ -1,6 +1,5 @@
 
-  
-# GUI.py
+  # GUI.py
 import pygame
 import time
 pygame.font.init()
@@ -8,7 +7,7 @@ pygame.font.init()
 
 class Grid:
     board = [
-        [7, 8, 0, 4, 0, 0, 1, 2, 0],
+        [0, 8, 0, 4, 0, 0, 1, 2, 0],
         [6, 0, 0, 0, 7, 5, 0, 0, 9],
         [0, 0, 0, 6, 0, 1, 0, 7, 8],
         [0, 0, 7, 0, 4, 0, 2, 6, 0],
@@ -52,6 +51,12 @@ class Grid:
         self.cubes[row][col].set_temp(val)
 
     def draw(self):
+        #draw solve button
+        pygame.draw.rect(self.win, (128, 128, 128), (200, 555, 75, 35), 0)
+        fnt = pygame.font.SysFont("comicsans", 32)
+        text = fnt.render("Solve!", 1, (0, 0, 0))
+        self.win.blit(text, (205, 562))
+
         # Draw Grid Lines
         gap = self.width / 9
         for i in range(self.rows+1):
@@ -82,14 +87,11 @@ class Grid:
             self.cubes[row][col].set_temp(0)
 
     def click(self, pos):
-        """
-        :param: pos
-        :return: (row, col)
-        """
         if pos[0] < self.width and pos[1] < self.height:
             gap = self.width / 9
             x = pos[0] // gap
             y = pos[1] // gap
+            
             return (int(y),int(x))
         else:
             return None
@@ -147,6 +149,8 @@ class Grid:
                 pygame.time.delay(100)
 
         return False
+
+    
 
 
 class Cube:
@@ -255,6 +259,9 @@ def format_time(secs):
     mat = " " + str(minute) + ":" + str(sec)
     return mat
 
+def button_clicked(pos):
+    return pos[0] > 200 and pos[1] > 556 and pos[0] < 275 and pos[1] < 588
+
 
 def main():
     win = pygame.display.set_mode((540,600))
@@ -312,9 +319,6 @@ def main():
                     board.clear()
                     key = None
 
-                if event.key == pygame.K_SPACE:
-                    board.solve_gui()
-
                 if event.key == pygame.K_RETURN:
                     i, j = board.selected
                     if board.cubes[i][j].temp != 0:
@@ -330,6 +334,8 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
+                if button_clicked(pos):
+                    board.solve_gui()
                 clicked = board.click(pos)
                 if clicked:
                     board.select(clicked[0], clicked[1])
